@@ -1,43 +1,42 @@
 import requests
 from bs4 import BeautifulSoup
-import _csv as csv
+import os
+import reusables
+import getpass
 
 
 def search():
     # Determine the location to be searched
-    #city = input("Your Town/City: ")   Put this in later to replace "town" variable
+    # city = input("Your Town/City: ")   Put this in later to replace "town" variable
     town = "greenville"
-    craigslist = 'http://' + town + ".craigslist.org/search/zip"
-    print(craigslist)
-    r = requests.get(craigslist).text
+
+    item_type = "zip"  # Changing so can do link combination better later
+    craigslist = 'http://' + town + ".craigslist.org/search/"
+
+    r = requests.get(craigslist + item_type).text
 
     # Scraping the site
-    first_file = "C:\\Users\\Sam\\Documents\\first.csv"
+    first_file = "C:\\Users\\{}\\Documents\\first.csv".format(getpass.getuser()) # So it works on both mine and yours
 
-    for pg in craigslist:
-        soup = BeautifulSoup(r, 'html.parser')
-        name_box = soup.find('a', attrs={'class': 'result-title hdrlnk'}) # see below
-        time_box = soup.find('time', attrs={'class': 'result-date'})  # need to find a way to get iterate thru
-        name = name_box.text
-        time = time_box.text
-        data = []
-        data.append((name, time))
-        not_dup = []
-        if name != not_dup:
-            not_dup.append(name)
-            with open(first_file, 'a') as csv_file:
-                writer = csv.writer(csv_file)
-                for name, time in data:
-                    writer.writerow([time, name])
-            print(time, name)
-        else:
+    soup = BeautifulSoup(r, 'html.parser')
+
+    data = []
+    if os.path.exists(first_file):
+        data = reusables.csv_to_list(first_file)  # Cheating because I already wrote this code
+
+    for item in soup.find_all('li', attrs={"class": "result-row"}):
+        a_link = item.find('a', attrs={'class': 'result-title hdrlnk'})
+        datetime = item.find('time', attrs={'class': 'result-date'})['datetime']
+        new_row = [datetime, a_link.text,
+                   craigslist + a_link['href'].lstrip("/")]
+        if new_row in data:
             continue
+        data.append(new_row)
+        print("Adding {}".format(a_link.text))
 
+    reusables.list_to_csv(data[-50:], first_file)
 
     print("done")
 
 
 search()
-
-
-
