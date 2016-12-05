@@ -1,7 +1,7 @@
 import datetime as datetime
 import scour
 import reusables
-
+import schedule
 
 
 def run():
@@ -12,5 +12,5 @@ def run():
         print("Maybe later? See You")
         print("love you")
 
-
 run()
+schedule.every(1).minute.do(run())
