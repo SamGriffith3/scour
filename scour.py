@@ -8,9 +8,9 @@ import getpass
 def search():
     # Determine the location to be searched
     # city = input("Your Town/City: ")   Put this in later to replace "town" variable
-    town = "greenville"
+    town = "pittsburgh"
 
-    item_type = "zip"  # Changing so can do link combination better later
+    item_type = "cto?sort=priceasc&min_price=5000&min_auto_year=2010"  # Changing so can do link combination better later
     craigslist = 'http://' + town + ".craigslist.org/search/"
 
     r = requests.get(craigslist + item_type).text
@@ -33,8 +33,11 @@ def search():
             continue
         data.append(new_row)
         print("Adding {}".format(a_link.text))
+        
+    for item in soup.find_all('postingbody', attrs={"class": "result-row"}):
+        
 
-    reusables.list_to_csv(data[-50:], first_file)
+    reusables.list_to_csv(data[-100:], first_file)
 
     print("done")
 
