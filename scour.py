@@ -7,8 +7,8 @@ import getpass
 
 def search():
     # Determine the location to be searched
-    # city = input("Your Town/City: ")   Put this in later to replace "town" variable
-    town = "pittsburgh"
+    town = input("Your Town/City: ")
+    
 
     item_type = "cto?sort=priceasc&min_price=5000&min_auto_year=2010"  # Changing so can do link combination better later
     craigslist = 'http://' + town + ".craigslist.org/search/"
@@ -16,13 +16,13 @@ def search():
     r = requests.get(craigslist + item_type).text
 
     # Scraping the site
-    first_file = "C:\\Users\\{}\\Documents\\first.csv".format(getpass.getuser()) # So it works on both mine and yours
+    first_file = "C:\\Users\\{}\\Documents\\first.csv".format(getpass.getuser())
 
     soup = BeautifulSoup(r, 'html.parser')
 
     data = []
     if os.path.exists(first_file):
-        data = reusables.csv_to_list(first_file)  # Cheating because I already wrote this code
+        data = reusables.csv_to_list(first_file) 
 
     for item in soup.find_all('li', attrs={"class": "result-row"}):
         a_link = item.find('a', attrs={'class': 'result-title hdrlnk'})
