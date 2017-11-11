@@ -10,7 +10,7 @@ def run():
         scour.search()
     else:
         print("Maybe later? See You")
-        print("love you")
+        
 
 run()
 schedule.every(1).minute.do(run())
